@@ -1,5 +1,3 @@
-
-
 import java.util.*;
 
 public class ExpressionEvaluator {
@@ -15,6 +13,13 @@ public class ExpressionEvaluator {
 
         if (tokens.length == 1) {
             String token = tokens[0];
+
+            if (token.equals("True")) {
+                return 1;
+            } else if (token.equals("False")) {
+                return 0;
+            }
+
             if (isNumeric(token)) {
                 return Integer.parseInt(token);
             } else if (variables.containsKey(token)) {
@@ -28,7 +33,11 @@ public class ExpressionEvaluator {
         Stack<Character> operators = new Stack<>();
 
         for (String token : tokens) {
-            if (isNumeric(token)) {
+            if (token.equals("True")) {
+                values.push(1);
+            } else if (token.equals("False")) {
+                values.push(0);
+            } else if (isNumeric(token)) {
                 values.push(Integer.parseInt(token));
             } else if (variables.containsKey(token)) {
                 values.push(variables.get(token));
@@ -79,7 +88,6 @@ public class ExpressionEvaluator {
 
         int leftValue = evaluate(leftExpr.toString().trim());
         int rightValue = evaluate(rightExpr.toString().trim());
-
         return switch (operator) {
             case "<" -> leftValue < rightValue;
             case "<=" -> leftValue <= rightValue;
@@ -87,6 +95,8 @@ public class ExpressionEvaluator {
             case ">=" -> leftValue >= rightValue;
             case "==" -> leftValue == rightValue;
             case "!=" -> leftValue != rightValue;
+            case "True" -> leftValue != 0;
+            case "False" -> leftValue == 0;
             default -> throw new IllegalArgumentException("Invalid operator in condition: " + operator);
         };
     }

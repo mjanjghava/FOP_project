@@ -8,15 +8,21 @@ public class Interpreter {
         int i = 0;
         while (i < lines.length) {
             String line = lines[i].trim();
+            int commentIndex = line.indexOf("//");
+            if (commentIndex != -1) {
+                line = line.substring(0, commentIndex).trim();
+            }
 
             if (line.startsWith("while")) {
                 i = new LoopHandler(this).handleWhile(line, lines, i);
             } else if (line.startsWith("if")) {
                 i = new ConditionalHandler(this).handleIf(line, lines, i);
             } else if (line.startsWith("print")) {
-                handlePrint(line); // Updated handlePrint method is used here
+                handlePrint(line);
             } else if (line.contains("=")) {
                 handleAssignment(line);
+            } else if (line.startsWith("for")) {
+                i = new LoopHandler(this).handleFor(line, lines, i);
             } else if (!line.isEmpty()) {
                 throw new IllegalArgumentException("Invalid syntax: " + line);
             }
@@ -47,23 +53,17 @@ public class Interpreter {
         variables.put(varName, value);
     }
 
-    // Updated handlePrint method
     private void handlePrint(String line) {
         String content = line.substring(line.indexOf("(") + 1, line.lastIndexOf(")")).trim();
-        if (content.startsWith("\"") && content.endsWith("\"")) {
-            // Print the string as it is
-            System.out.println(content.substring(1, content.length() - 1));
-        } else {
-            // Evaluate and print the expression
-            int value = evaluateExpression(content);
-            System.out.println(value);
-        }
+        Object result = evaluateExpression(content);
+
+        System.out.println(result);
     }
 
     public static void main(String[] args) {
         Interpreter interpreter = new Interpreter();
         String program = """
-        
+
         """;
 
         interpreter.eval(program);
